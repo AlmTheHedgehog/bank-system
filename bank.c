@@ -36,6 +36,8 @@ int main(){
                 case 3:
                     isValid_answer = true;
                     account_entering_interface();
+                    clear_csl();
+                    printf("Welcome to the banking system!");
                     break;
                 case 4:
                     isValid_answer = true;
@@ -62,6 +64,7 @@ void account_interface(account acc){
         printf("\n1 - transfer\n");
         printf("2 - deposit\n");
         printf("3 - withdrawal\n");
+        printf("4 - exit from account\n");
         printf("What do you want:");
         isValid_answer = false;
         while(!isValid_answer){
@@ -72,8 +75,18 @@ void account_interface(account acc){
                 case 1:
                     break;
                 case 2:
+                    isValid_answer = true;
+                    make_deposit(&acc);
+                    clear_csl();
+                    print_acc_info(acc);
                     break;
                 case 3:
+                    break;
+                case 4:
+                    isValid_answer = true;
+                    if(confirmation()){
+                        isWorking = false;
+                    }
                     break;
                 default:
                     printf("Sorry, invalid answer, try again:");
@@ -85,12 +98,11 @@ void account_interface(account acc){
 void account_entering_interface(){
     account current_account;
     enum search_options s_option = account_search_option_interface();
-    printf("Enter value:");
     void* value_ptr;
     switch(s_option){
         case sName_surname:;
             char value_ns[NAME_LENGTH*2], name[NAME_LENGTH], surname[NAME_LENGTH];
-            string_read("\nEnter name:", isName, NAME_LENGTH, name);
+            string_read("Enter name:", isName, NAME_LENGTH, name);
             string_read("Enter surname:", isName, NAME_LENGTH, surname);
             add_name_surname(value_ns, name, surname);
             value_ptr = (void*)value_ns;

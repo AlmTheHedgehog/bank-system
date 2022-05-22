@@ -3,7 +3,7 @@
 
 void string_read(char text[], enum check_types check_type, short size, char output[]){
     printf("%s", text);
-    boolean isIncorrect = 1;
+    boolean isIncorrect = true;
     do{
         if(scanf("%[^\n]s", output) == 1){
             if(check_type == isAdress){
@@ -60,7 +60,11 @@ long int int_read(char text[], enum check_types check_type){
                     }
                     break;
                 case isNumb:
-                    return output;
+                    if(output >= 0){
+                        return output;
+                    }else{
+                        printf("Can`t be negative. ");
+                    }
                 default:
                     printf("!!!WRONG check_type in string_read()");
             }
@@ -81,6 +85,22 @@ short int file_wrong(char text[], FILE* file){
         return 0;
     }else{
         return -1;
+    }
+}
+boolean confirmation(){
+    printf("Are you sure in you decision(y or n)?");
+    char output = ' ';
+    while(1){
+        scanf("%c", &output);
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+        if(output == 'y'){
+            return true;
+        }else if(output == 'n'){
+            return false;
+        }else{
+            wrong_in();
+        }
     }
 }
 
@@ -259,5 +279,13 @@ void add_name_surname(char output[], char name[], char surname[]){
         }else{
             output[i] = ' ';
         }
+    }
+}
+
+void make_deposit(account *acc){
+    int sum = int_read("Enter ammount:", isNumb);
+    if(confirmation()){
+        acc->balance += sum;
+        put_acccount_inDB(*acc, false);
     }
 }

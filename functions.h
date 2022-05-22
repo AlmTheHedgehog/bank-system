@@ -15,5 +15,7 @@ void filling_new_acc(account *acc);
 short int search_acc(account *acc, enum search_options s_option, void* input_value); //0 - not found, 1 - found, -1 - error
 void separate_name_surname(char input[], char name[], char surname[]);
 void add_name_surname(char output[], char name[], char surname[]);
+void make_deposit(account *acc);
+boolean confirmation();
 
 #endif
