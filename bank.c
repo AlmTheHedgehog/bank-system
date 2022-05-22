@@ -1,7 +1,7 @@
 #include "bank.h"
 
 void account_interface(account acc);
-void account_entering_interface();
+account account_entering_interface();
 enum search_options account_search_option_interface();
 
 int main(){
@@ -35,7 +35,7 @@ int main(){
                     break;
                 case 3:
                     isValid_answer = true;
-                    account_entering_interface();
+                    account_interface(account_entering_interface());
                     clear_csl();
                     printf("Welcome to the banking system!");
                     break;
@@ -55,47 +55,58 @@ int main(){
 }
 
 void account_interface(account acc){
-    boolean isWorking = true, isValid_answer;
-    short int answer = 0;
-    clear_csl();
-    printf("Welcome to your account!\n");
-    print_acc_info(acc);
-    while(isWorking){
-        printf("\n1 - transfer\n");
-        printf("2 - deposit\n");
-        printf("3 - withdrawal\n");
-        printf("4 - exit from account\n");
-        printf("What do you want:");
-        isValid_answer = false;
-        while(!isValid_answer){
-            scanf("%hd", &answer);
-            int c;
-            while ((c = getchar()) != '\n' && c != EOF);
-            switch(answer){
-                case 1:
-                    break;
-                case 2:
-                    isValid_answer = true;
-                    make_deposit(&acc);
-                    clear_csl();
-                    print_acc_info(acc);
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    isValid_answer = true;
-                    if(confirmation()){
-                        isWorking = false;
-                    }
-                    break;
-                default:
-                    printf("Sorry, invalid answer, try again:");
+    if(acc.account_id != 0){
+        boolean isWorking = true, isValid_answer;
+        short int answer = 0;
+        clear_csl();
+        printf("Welcome to your account!\n");
+        print_acc_info(acc);
+        while(isWorking){
+            printf("\n1 - transfer\n");
+            printf("2 - deposit\n");
+            printf("3 - withdrawal\n");
+            printf("4 - exit from account\n");
+            printf("What do you want:");
+            isValid_answer = false;
+            while(!isValid_answer){
+                scanf("%hd", &answer);
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF);
+                switch(answer){
+                    case 1:
+                        isValid_answer = true;
+                        printf("\nFind account for money transfer.");
+                        transfer(&acc, account_entering_interface());
+                        clear_csl();
+                        print_acc_info(acc);
+                        break;
+                    case 2:
+                        isValid_answer = true;
+                        change_balance(&acc, true);
+                        clear_csl();
+                        print_acc_info(acc);
+                        break;
+                    case 3:
+                        isValid_answer = true;
+                        change_balance(&acc, false);
+                        clear_csl();
+                        print_acc_info(acc);
+                        break;
+                    case 4:
+                        isValid_answer = true;
+                        if(confirmation()){
+                            isWorking = false;
+                        }
+                        break;
+                    default:
+                        printf("Sorry, invalid answer, try again:");
+                }
             }
         }
     }
 }
 
-void account_entering_interface(){
+account account_entering_interface(){
     account current_account;
     enum search_options s_option = account_search_option_interface();
     void* value_ptr;
@@ -122,9 +133,11 @@ void account_entering_interface(){
             break;
     }
     if(search_acc(&current_account, s_option, value_ptr)){
-        account_interface(current_account);
+        return current_account;
     }else{
         printf("Sorry, account wasn`t found");
+        current_account.account_id = 0;
+        return current_account;
     }
 }
 

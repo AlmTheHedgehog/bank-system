@@ -282,10 +282,39 @@ void add_name_surname(char output[], char name[], char surname[]){
     }
 }
 
-void make_deposit(account *acc){
+void change_balance(account *acc, boolean isPut_money){
     int sum = int_read("Enter ammount:", isNumb);
-    if(confirmation()){
-        acc->balance += sum;
-        put_acccount_inDB(*acc, false);
+    if(!isPut_money){
+        while((acc->balance - sum) < 0){
+            printf("Not enough money. ");
+            sum = int_read("Enter ammount:", isNumb);
+        }
+        if(confirmation()){
+            acc->balance -= sum;
+            put_acccount_inDB(*acc, false);
+        }
+    }else{    
+        if(confirmation()){
+            acc->balance += sum;
+            put_acccount_inDB(*acc, false);
+        }
+    }
+}
+
+void transfer(account *acc_source, account acc_dist){
+    int sum = int_read("Enter ammount for transfer:", isNumb);
+    if((acc_source->balance) <= 0){
+        printf("Sorry, you don`t have any money fot transfer :(\n");
+    }else{
+        while((acc_source->balance - sum) < 0){
+            printf("Not enough money. ");
+            sum = int_read("Enter ammount:", isNumb);
+        }
+        if(confirmation()){
+            acc_source->balance -= sum;
+            put_acccount_inDB(*acc_source, false);
+            acc_dist.balance += sum;
+            put_acccount_inDB(acc_dist, false);
+        }
     }
 }
