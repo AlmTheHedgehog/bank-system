@@ -11,5 +11,6 @@ long int int_read(char text[], enum check_types check_type);
 void wrong_in();
 short int file_wrong(char text[], FILE* file); //0 is not smth wrong, -1 file doesn`t exist
 void append_acc_toDB(account acc, FILE* file);
+void filling_new_acc(account *acc);
 
 #endif

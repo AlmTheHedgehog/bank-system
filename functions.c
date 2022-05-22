@@ -5,7 +5,7 @@ void string_read(char text[], enum check_types check_type, short size, char outp
     printf("%s", text);
     boolean isIncorrect = 1;
     do{
-        if(scanf("%[^\n]%*c", output) == 1){
+        if(scanf("%[^\n]s", output) == 1){
             if(check_type == isAdress){
                 isIncorrect = false;
             }else if(check_type == isName){
@@ -22,6 +22,8 @@ void string_read(char text[], enum check_types check_type, short size, char outp
                 printf("!!!WRONG check_type in string_read()");
             }
         }
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
         if(isIncorrect){
             wrong_in();
         }
@@ -84,7 +86,7 @@ short int file_wrong(char text[], FILE* file){
 
 short int put_acccount_inDB(account acc, boolean isNew){
     FILE* db;
-    db = fopen(db_path, "rb+");
+    db = fopen(DB_PATH, "rb+");
     if(db != NULL){
         account read_acc;
         boolean isMatch_found = false;
@@ -129,8 +131,27 @@ short int put_acccount_inDB(account acc, boolean isNew){
 
 void append_acc_toDB(account acc, FILE* file){
     file_wrong(NULL, file);
-    file = fopen(db_path, "ab");
+    file = fopen(DB_PATH, "ab");
     fwrite(&acc, sizeof(acc), 1, file);
     fflush(file);
     fclose(file);
+}
+
+void filling_new_acc(account *acc){
+    printf("Creating new account\n");
+    string_read("Enter your name:", isName, NAME_LENGTH, acc->name);
+    string_read("Enter your surname:", isName, NAME_LENGTH, acc->surname);
+    string_read("Enter your adress:", isAdress, ADRESS_LENGTH, acc->adress);
+    acc->pesel = int_read("Enter your PESEL:", isPESEL);
+    acc->balance = int_read("Enter your balance:", isNumb);
+    acc->account_id = ((acc->pesel % 10) + ((acc->pesel/10) % 10));
+    if(acc->account_id > 9){
+        acc->account_id /= 10;
+    }
+    acc->account_id *= 10;
+    acc->account_id += (((acc->pesel/100) % 10) + ((acc->pesel/1000) % 10));
+    if(acc->account_id > 99){
+        acc->account_id /= 10;
+    }
+    acc->account_id = (acc->account_id * 100000000000) + acc->pesel;
 }
