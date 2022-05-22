@@ -155,3 +155,109 @@ void filling_new_acc(account *acc){
     }
     acc->account_id = (acc->account_id * 100000000000) + acc->pesel;
 }
+
+short int search_acc(account *acc, enum search_options s_option, void* input_value){
+    FILE* db;
+    char name[NAME_LENGTH], surname[NAME_LENGTH], adress[ADRESS_LENGTH];
+    long int acc_id, pesel;
+    db = fopen(DB_PATH, "rb+");
+    if(db != NULL){
+        if(s_option == sName_surname){
+            separate_name_surname((char*)input_value, name, surname);
+        }else if(s_option == sAdress){
+            strcpy(adress, (char*)input_value);
+        }else if(s_option == sAccount_id){
+            acc_id = *((long*)input_value);
+        }else if(s_option == sPESEL){
+            pesel = *((long*)input_value);
+        }else{
+            return file_wrong("!!!WRONG SEARCH OPTION in seardch_acc", db);
+        }
+        account read_acc;
+        while(!feof(db)){
+            fread(&read_acc, sizeof(read_acc), 1, db);
+            if(s_option == sName_surname){
+                if((strcmp(name, read_acc.name) == 0) && (strcmp(surname, read_acc.surname) == 0)){
+                    *acc = read_acc;
+                    return 1;
+                }
+            }else if(s_option == sAdress){
+                if(strcmp(adress, read_acc.adress) == 0){
+                    *acc = read_acc;
+                    return 1;
+                }
+            }else if(s_option == sAccount_id){
+                if(acc_id == read_acc.account_id){
+                    *acc = read_acc;
+                    return 1;
+                }
+            }else{
+                if(pesel == read_acc.pesel){
+                    *acc = read_acc;
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }else{
+        return file_wrong("!!!CAN`T OPEN FILE during search_acc", db);
+    }
+}
+
+void separate_name_surname(char input[], char name[], char surname[]){
+    boolean is_ended = false;
+    for(int i = 0; i < (NAME_LENGTH); i++){
+        if(!is_ended){
+            if(input[i] == ' '){
+                is_ended = true;
+                name[i] = '\0';
+            }else{
+                name[i] = input[i];
+            }
+        }else{
+            name[i] = '\0';
+        }
+    }
+    is_ended = false;
+    for(int i = NAME_LENGTH; i < (NAME_LENGTH*2); i++){
+        if(!is_ended){
+            if(input[i] == ' '){
+                is_ended = true;
+                surname[i - NAME_LENGTH] = '\0';
+            }else{
+                surname[i - NAME_LENGTH] = input[i];
+            }
+        }else{
+            surname[i - NAME_LENGTH] = '\0';
+        }
+    }
+}
+
+void add_name_surname(char output[], char name[], char surname[]){
+    boolean is_ended = false;
+    for(int i = 0; i < (NAME_LENGTH); i++){
+        if(!is_ended){
+            if(name[i] == '\0'){
+                is_ended = true;
+                output[i] = ' ';
+            }else{
+                output[i] = name[i];
+            }
+        }else{
+            output[i] = ' ';
+        }
+    }
+    is_ended = false;
+    for(int i = NAME_LENGTH; i < (NAME_LENGTH*2); i++){
+        if(!is_ended){
+            if(surname[i - NAME_LENGTH] == '\0'){
+                is_ended = true;
+                output[i] = ' ';
+            }else{
+                output[i] = surname[i - NAME_LENGTH];
+            }
+        }else{
+            output[i] = ' ';
+        }
+    }
+}

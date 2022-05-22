@@ -12,5 +12,8 @@ void wrong_in();
 short int file_wrong(char text[], FILE* file); //0 is not smth wrong, -1 file doesn`t exist
 void append_acc_toDB(account acc, FILE* file);
 void filling_new_acc(account *acc);
+short int search_acc(account *acc, enum search_options s_option, void* input_value); //0 - not found, 1 - found, -1 - error
+void separate_name_surname(char input[], char name[], char surname[]);
+void add_name_surname(char output[], char name[], char surname[]);
 
 #endif

@@ -7,6 +7,7 @@
 #define NAME_LENGTH 31
 #define ADRESS_LENGTH 61
 enum check_types{isName, isAdress, isPESEL, isAccNumber, isNumb};
+enum search_options{sName_surname, sPESEL, sAccount_id, sAdress};
 typedef enum boolean_en{true = 1, false = 0}boolean;
 
 typedef struct account_struct{
@@ -19,5 +20,6 @@ typedef struct account_struct{
 }account;
 
 void list_all_acc();
+void print_acc_info(account eachAcc);
 
 #endif
