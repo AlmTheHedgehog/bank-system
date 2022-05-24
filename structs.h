@@ -16,7 +16,7 @@ typedef struct account_struct{
     char surname[NAME_LENGTH];
     char adress[ADRESS_LENGTH];
     long int pesel;
-    long int balance;
+    double balance;
 }account;
 
 void list_all_acc();

@@ -23,5 +23,5 @@ void print_acc_info(account eachAcc){
     printf("Name:%s\n", eachAcc.name);
     printf("Surname:%s\n", eachAcc.surname);
     printf("Adress:%s\n", eachAcc.adress);
-    printf("Balance:%ld\n", eachAcc.balance);
+    printf("Balance:%.2f\n", eachAcc.balance);
 }

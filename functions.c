@@ -4,19 +4,30 @@
 void string_read(char text[], enum check_types check_type, short size, char output[]){
     printf("%s", text);
     boolean isIncorrect = true;
+    int i;
     do{
         if(scanf("%[^\n]s", output) == 1){
+            isIncorrect = false;
+            i = 0;
             if(check_type == isAdress){
-                isIncorrect = false;
+                while((output[i] !='\0') && (!isIncorrect)){
+                    i++;
+                    if(i > 60){
+                        isIncorrect = true;
+                        printf("Too long. ");
+                    }
+                }
             }else if(check_type == isName){
-                isIncorrect = false;
-                int i = 0;
-                while(output[i] != '\0'){
+                while((output[i] !='\0') && (!isIncorrect)){
                     if((!((output[i] >= 65) && (output[i] <= 90)) && !((output[i] >= 97) && (output[i] <= 122)))
                             && (output[i] !='\0')){
                         isIncorrect = true;
                     }
                     i++;
+                    if(i > 30){
+                        isIncorrect = true;
+                        printf("Too long. ");
+                    }
                 }
             }else{
                 printf("!!!WRONG check_type in string_read()");
@@ -30,32 +41,48 @@ void string_read(char text[], enum check_types check_type, short size, char outp
     }while(isIncorrect);
 }
 
-long int int_read(char text[], enum check_types check_type){
+double double_read(char text[], enum check_types check_type){
     printf("%s", text);
-    long int output = 0;
+    double output = 0;
     boolean onlyNumbers;
+    boolean dot_found = false;
     char input_str[16];
+    int i, j;
     do{
         onlyNumbers = true;
         scanf("%15[^\n]s", input_str);
-        int c, i = 0;
+        int c;
         while ((c = getchar()) != '\n' && c != EOF);
+        i = 0;
+        j = 0;
         while(input_str[i] != '\0'){
-            if(!((input_str[i] >= 48) & (input_str[i] <= 57)) && (input_str[i] != '\0')){
+            if(!((input_str[i] >= 48) && (input_str[i] <= 57)) && ((input_str[i] != '\0') && (input_str[i] != '.'))){
                 onlyNumbers = false;
+            }
+            if(input_str[i] == '.'){
+                if(dot_found){
+                    onlyNumbers = false;
+                }else{
+                    dot_found = true;
+                }
+            }else if(dot_found){
+                j++;
             }
             i++;
         }
+        if((i > 14) || (j > 2)){
+            onlyNumbers = false;
+        }
         if(onlyNumbers){
-            output = atol(input_str);
+            output = atof(input_str);
             switch(check_type){
                 case isPESEL:
-                    if((output >= 10000000000) && (output <= 99999999999)){
+                    if(((output >= 10000000000) && (output <= 99999999999)) && (j == 0)){
                         return output;
                     }
                     break;
                 case isAccNumber:
-                    if((output >= 1000000000000) && (output <= 9999999999999)){
+                    if(((output >= 1000000000000) && (output <= 9999999999999)) && (j == 0)){
                         return output;
                     }
                     break;
@@ -71,6 +98,10 @@ long int int_read(char text[], enum check_types check_type){
         }
         wrong_in();
     }while(1);
+}
+
+long int int_read(char text[], enum check_types check_type){
+    return (long)double_read(text, check_type);
 }
 
 void wrong_in(){
@@ -163,7 +194,7 @@ void filling_new_acc(account *acc){
     string_read("Enter your surname:", isName, NAME_LENGTH, acc->surname);
     string_read("Enter your adress:", isAdress, ADRESS_LENGTH, acc->adress);
     acc->pesel = int_read("Enter your PESEL:", isPESEL);
-    acc->balance = int_read("Enter your balance:", isNumb);
+    acc->balance = double_read("Enter your balance:", isNumb);
     acc->account_id = ((acc->pesel % 10) + ((acc->pesel/10) % 10));
     if(acc->account_id > 9){
         acc->account_id /= 10;
@@ -283,9 +314,9 @@ void add_name_surname(char output[], char name[], char surname[]){
 }
 
 void change_balance(account *acc, boolean isPut_money){
-    int sum = int_read("Enter ammount:", isNumb);
+    double sum = double_read("Enter ammount:", isNumb);
     if(!isPut_money){
-        while((acc->balance - sum) < 0){
+        while((acc->balance - sum) < 0.0001){
             printf("Not enough money. ");
             sum = int_read("Enter ammount:", isNumb);
         }
@@ -302,11 +333,11 @@ void change_balance(account *acc, boolean isPut_money){
 }
 
 void transfer(account *acc_source, account acc_dist){
-    int sum = int_read("Enter ammount for transfer:", isNumb);
+    double sum = double_read("Enter ammount for transfer:", isNumb);
     if((acc_source->balance) <= 0){
-        printf("Sorry, you don`t have any money fot transfer :(\n");
+        printf("Sorry, you don`t have any money for transfer :(\n");
     }else{
-        while((acc_source->balance - sum) < 0){
+        while((acc_source->balance - sum) < 0.000001){
             printf("Not enough money. ");
             sum = int_read("Enter ammount:", isNumb);
         }
